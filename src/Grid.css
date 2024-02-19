@@ -1,0 +1,37 @@
+.grid {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 20px;
+    border: 2px solid #000;
+}
+
+.grid-row {
+    display: flex;
+    width: 100%;
+}
+
+.cell {
+    width: 40px; /* Adjust based on your preference */
+    height: 40px; /* Adjust based on your preference */
+    border: 1px solid #ddd;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cell.wall {
+    background-color: #000; /* Black for walls */
+}
+
+.cell.start {
+    background-color: green; /* Green for start point */
+}
+
+.cell.end {
+    background-color: red; /* Red for end point */
+}
+
+.cell.visited {
+    background-color: #f0e68c; /* Khaki for visited cells */
+}
