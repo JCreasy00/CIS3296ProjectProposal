@@ -35,3 +35,7 @@
 .cell.visited {
     background-color: #f0e68c; /* Khaki for visited cells */
 }
+
+.cell.path {
+    background-color: blue; /* Change to your desired color for the path */
+}

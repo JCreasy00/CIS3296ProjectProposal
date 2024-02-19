@@ -77,6 +77,7 @@ const Grid = () => {
         const [endRow, endCol] = endPos;
         let queue = [[startRow, startCol]];
         let visited = grid.map(row => row.map(cell => false));
+        let parents = grid.map(row => row.map(cell => null)); // Store parents to reconstruct path
         visited[startRow][startCol] = true;
 
         const directions = [[1, 0], [-1, 0], [0, 1], [0, -1]]; // Down, Up, Right, Left
@@ -90,6 +91,7 @@ const Grid = () => {
             // Process current cell
             if (row === endRow && col === endCol) {
                 console.log("End found");
+                reconstructPath(startPos, endPos, parents);
                 break; // End found
             }
 
@@ -99,15 +101,38 @@ const Grid = () => {
                 if (newRow >= 0 && newRow < grid.length && newCol >= 0 && newCol < grid[0].length && !visited[newRow][newCol] && grid[newRow][newCol].type !== 'wall') {
                     queue.push([newRow, newCol]);
                     visited[newRow][newCol] = true;
-
+                    parents[newRow][newCol] = [row, col]; // Store parent
                     // Update grid for visualization
-                    let newGrid = grid.slice(); // Create a shallow copy of the grid
+                    let newGrid = grid.map(row => row.slice()); // Create a shallow copy of the grid
                     newGrid[newRow][newCol] = {...newGrid[newRow][newCol], visited: true}; // Mark as visited
                     setGrid(newGrid); // Update state to trigger re-render
                 }
             }
         }
     };
+
+    // Function to reconstruct the path from the end node back to the start node
+    const reconstructPath = (startPos, endPos, parents) => {
+        const path = [];
+        let currentPos = endPos;
+        while (currentPos.toString() !== startPos.toString()) {
+            path.push(currentPos);
+            currentPos = parents[currentPos[0]][currentPos[1]];
+        }
+        console.log("Path found:", path);
+
+        // Accumulate changes for path cells
+        const newGrid = grid.map(row => row.slice()); // Create a shallow copy of the grid
+        path.forEach(([row, col]) => {
+            newGrid[row][col] = {...newGrid[row][col], isPath: true}; // Mark as part of the path
+        });
+
+        // Update grid state to include path cells
+        setGrid(newGrid);
+    };
+
+
+
 
 
 // Function to handle cell click
@@ -159,7 +184,7 @@ const Grid = () => {
                         {row.map((cell, colIndex) => (
                             <div
                                 key={colIndex}
-                                className={`cell ${cell.isStart ? 'start' : ''} ${cell.isEnd ? 'end' : ''} ${cell.type === 'wall' ? 'wall' : ''}`}
+                                className={`cell ${cell.isStart ? 'start' : ''} ${cell.isEnd ? 'end' : ''} ${cell.type === 'wall' ? 'wall' : ''} ${cell.isPath ? 'path' : ''}`}
                                 onClick={() => handleCellClick(rowIndex, colIndex)}
                             ></div>
                         ))}
